@@ -32,9 +32,9 @@ pipeline {
                     def sidecar = docker.build('sidecar', '-f SideCarDockerfile .')
 
                     withDockerNetwork{ n ->
-                        database.withRun("--name=db -e POSTGRES_PASSWORD=postgres") { c -> // DB is spun up at this stage
+                        database.withRun("--network ${n} --name=database -e POSTGRES_PASSWORD=postgres") { c -> // DB is spun up at this stage
                             try {
-                                sidecar.inside("--link ${c.id}:db") {   // This container only gives a run time environment                             
+                                sidecar.inside("--network ${n}") {   // This container only gives a run time environment                             
                                     sh '''
                                         while ! pg_isready -h localhost -p 5432
                                         do
@@ -44,7 +44,7 @@ pipeline {
                                         done
                                     '''
                                 }
-                                docker.image('flyway/flyway').inside("--link ${c.id}:db") {
+                                docker.image('flyway/flyway').inside("--network ${n} -e FLYWAY_URL=jdbc:postgresql://database:5432/postgres") {
                                     sh 'sleep 10' // Giving DB enough time to start
                                     sh 'info'  // Trying a connection to the DB                                    
                                 }
