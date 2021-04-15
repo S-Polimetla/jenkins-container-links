@@ -21,7 +21,7 @@ pipeline {
                     def customPostgres = docker.build 'customPostgres'              
                     docker.image('postgres').withRun("--name=db -e POSTGRES_PASSWORD=postgres") { c -> // DB is spun up at this stage
                         try {
-                            docker.image('customPostgres').inside("--link ${c.id}:db") {   // This container only gives a run time environment                             
+                            customPostgres.inside("--link ${c.id}:db") {   // This container only gives a run time environment                             
                                 sh '''
                                     while ! pg_isready -h localhost -p 5432
                                     do
