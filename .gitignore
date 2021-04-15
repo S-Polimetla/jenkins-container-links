@@ -1,0 +1,29 @@
+# dependencies
+/node_modules
+
+# IDE
+/.idea
+/.awcache
+/.vscode
+/.vs
+/obj
+/bin
+*.njsproj.user
+
+# misc
+npm-debug.log
+
+# example
+/quick-start
+
+# tests
+/coverage
+/.nyc_output
+
+# dist
+/dist
+
+# environment config
+
+# serverless
+.serverless/*
