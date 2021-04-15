@@ -11,7 +11,8 @@ pipeline {
                 POSTGRES_DB = 'capital'
                 POSTGRES_USER = 'postgres'
                 POSTGRES_PASSWORD = 'postgres'                
-                FLYWAY_URL = 'jdbc:postgresql://localhost:5432/capital'
+                // FLYWAY_URL = 'jdbc:postgresql://localhost:5432/capital'
+                FLYWAY_URL = 'jdbc:postgresql://db:5432/capital'
                 FLYWAY_USER = 'postgres'
                 FLYWAY_PASSWORD = 'postgres'
             }
