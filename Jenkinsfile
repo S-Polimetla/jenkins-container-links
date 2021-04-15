@@ -18,10 +18,12 @@ pipeline {
             steps {
                 checkout scm                
                 script {      
-                    def customPostgres = docker.build 'customPostgres'              
-                    docker.image('postgres').withRun("--name=db -e POSTGRES_PASSWORD=postgres") { c -> // DB is spun up at this stage
+                    def database = docker.build('database', '-f DbDockerfile .')
+                    def sidecar = docker.build('sidecar', '-f SideCarDockerfile .')
+                              
+                    database.withRun("--name=db -e POSTGRES_PASSWORD=postgres") { c -> // DB is spun up at this stage
                         try {
-                            customPostgres.inside("--link ${c.id}:db") {   // This container only gives a run time environment                             
+                            sidecar.inside("--link ${c.id}:db") {   // This container only gives a run time environment                             
                                 sh '''
                                     while ! pg_isready -h localhost -p 5432
                                     do
@@ -31,10 +33,10 @@ pipeline {
                                     done
                                     '''
                                 }
-                                docker.image('flyway/flyway').inside("--link ${c.id}:db") {
-                                    sh 'sleep 10' // Giving DB enough time to start
-                                    sh 'info'  // Trying a connection to the DB                                    
-                                }
+                            docker.image('flyway/flyway').inside("--link ${c.id}:db") {
+                                sh 'sleep 10' // Giving DB enough time to start
+                                sh 'info'  // Trying a connection to the DB                                    
+                            }
                         } catch (exc) {
                             sh "docker logs ${c.id}"  // Logs of the first postgres container
                             throw exc
