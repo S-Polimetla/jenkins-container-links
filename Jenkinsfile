@@ -34,16 +34,16 @@ pipeline {
                     withDockerNetwork{ n ->
                         database.withRun("--network ${n} --name=database -e POSTGRES_PASSWORD=postgres") { c -> // DB is spun up at this stage
                             try {
-                                sidecar.inside("--network ${n}") {   // This container only gives a run time environment                             
-                                    sh '''
-                                        while ! pg_isready -h localhost -p 5432
-                                        do
-                                            echo $
-                                            echo "$(date) - waiting for database to start"
-                                            sleep 10
-                                        done
-                                    '''
-                                }
+                                // sidecar.inside("--network ${n}") {   // This container only gives a run time environment                             
+                                //     sh '''
+                                //         while ! pg_isready -h localhost -p 5432
+                                //         do
+                                //             echo $
+                                //             echo "$(date) - waiting for database to start"
+                                //             sleep 10
+                                //         done
+                                //     '''
+                                // }
                                 docker.image('flyway/flyway').inside("--network ${n} -e FLYWAY_URL=jdbc:postgresql://database:5432/postgres") {
                                     sh 'sleep 10' // Giving DB enough time to start
                                     sh 'info'  // Trying a connection to the DB                                    
