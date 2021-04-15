@@ -22,7 +22,7 @@ pipeline {
                         try {
                             docker.image('postgres').inside("--link ${c.id}:db") {   // This container only gives a run time environment                             
                                 sh '''
-                                    while ! pg_isready -h db -p 5432
+                                    while ! pg_isready -h localhost -p 5432
                                     do
                                         echo $
                                         echo "$(date) - waiting for database to start"
